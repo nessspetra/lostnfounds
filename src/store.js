@@ -29,7 +29,31 @@ const store = configureStore({
     isChangeProfilePhoto: isChangeProfilePhotoActionCreator,
     isChangeProfilePassword: isChangeProfilePasswordReducer,
 
-      },
+    // Lost & Found reducers (Ditambahkan)
+    lostFounds: lostfoundReducer.lostFoundsReducer,
+    lostFound: lostfoundReducer.lostFoundReducer,
+    isLostFound: lostfoundReducer.isLostFoundReducer,
+    
+    // Add Status
+    isLostAdd: lostfoundReducer.isLostFoundAddReducer,
+    isLostAdded: lostfoundReducer.isLostFoundAddedReducer,
+    
+    // Change Status
+    isLostFoundChange: lostfoundReducer.isLostFoundChangeReducer,
+    isLostFoundChanged: lostfoundReducer.isLostFoundChangedReducer,
+
+    // Change Cover Status
+    isLostFoundChangeCover: lostfoundReducer.isLostFoundChangeCoverReducer,
+    isLostFoundChangedCover: lostfoundReducer.isLostFoundChangedCoverReducer,
+
+    // Delete Status
+    isLostFoundDelete: lostfoundReducer.isLostFoundDeleteReducer,
+    isLostFoundDeleted: lostfoundReducer.isLostFoundDeletedReducer,
+
+    // Stats
+    statsDaily: lostfoundReducer.statsDailyReducer,
+    statsMonthly: lostfoundReducer.statsMonthlyReducer,
+  },
 });
 
 export default store;
