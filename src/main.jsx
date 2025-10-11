@@ -12,7 +12,7 @@ import store from "./store";
 createRoot(document.getElementById("root")).render(
   <Provider store={store}>
     <StrictMode>
-      <BrowserRouter>
+      <BrowserRouter basename="/lostnfounds">
         <App />
       </BrowserRouter>
     </StrictMode>
