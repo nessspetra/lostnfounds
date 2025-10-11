@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 
 const LoginPage = lazy(() => import("./features/auth/pages/LoginPage"));
@@ -7,6 +7,7 @@ const RegisterPage = lazy(() => import("./features/auth/pages/RegisterPage"));
 const HomePage = lazy(() => import("./features/lost-founds/pages/HomePage"));
 const DetailPage = lazy(() => import("./features/lost-founds/pages/DetailPage"));
 const LostFoundsLayout = lazy(() => import("./features/lost-founds/layouts/LostFoundsLayout"));
+const ProfilePage = lazy(() => import("./features/users/pages/ProfilePage"));
 
 
 function App() {
@@ -37,14 +38,21 @@ function App() {
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
         </Route>
-        {/* Lost & Founds */}
+        
+        {/* Lost & Founds (Main Layout) */}
         <Route path="/" element={<LostFoundsLayout />}>
           <Route index element={<HomePage />} />
-          <Route path="lost-founds/:lostfoundsId" element={<DetailPage />} />
+          
+          {/* CATATAN: Ubah path params dari :lostfoundsId ke :lostFoundId (lebih umum) */}
+          <Route path="lost-founds/:lostFoundId" element={<DetailPage />} />
+          
+
+          <Route path="profile" element={<ProfilePage />} />
+
         </Route>
       </Routes>
     </Suspense> 
   );
 }
 
-export default App
+export default App;

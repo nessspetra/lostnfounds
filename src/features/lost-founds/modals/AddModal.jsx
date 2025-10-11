@@ -1,70 +1,85 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import useInput from "../../../hooks/useInput";
-import { showErrorDialog } from "../../../helpers/toolsHelper";
+import { showErrorDialog, showSuccessDialog } from "../../../helpers/toolsHelper";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  asyncSetIsLostFoundAdd,
   asyncSetLostFounds,
   setIsLostFoundAddActionCreator,
   setIsLostFoundAddedActionCreator,
-} from "../states/action";
+  // Kita tidak perlu asyncSetIsLostFoundAdd karena kita memanggil API langsung
+} from "../states/action"; 
+import lostFoundApi from "../api/lostfoundApi"; // Diperlukan untuk POST bertahap
 
 function AddModal({ show, onClose }) {
   const dispatch = useDispatch();
 
-
-  const isLostFoundAdd = useSelector((state) => state.isLostFoundAdd);
-  const isLostFoundAdded = useSelector((state) => state.isLostFoundAdded);
+  const isLostAdd = useSelector((state) => state.isLostAdd);
+  const isLostAdded = useSelector((state) => state.isLostAdded);
 
   const [loading, setLoading] = useState(false);
-
+  
+  // State Input Teks
   const [title, changeTitle] = useInput("");
   const [description, changeDescription] = useInput("");
+  
+  // State Input Gambar
+  const [fileCover, setFileCover] = useState(null); 
+  const fileInputRef = useRef(null);
 
-  const [status, setStatus] = useState("lost"); 
-
-  // 1. Cek apakah isLostFoundAdd sudah selesai
+  // Cek apakah tambah data selesai
   useEffect(() => {
-    if (isLostFoundAdd) {
+    if (isLostAdd) {
       setLoading(false);
       dispatch(setIsLostFoundAddActionCreator(false));
-      if (isLostFoundAdded) {
+      if (isLostAdded) {
         dispatch(setIsLostFoundAddedActionCreator(false));
-        // perbarui data lost & found
-        dispatch(asyncSetLostFounds());
-        onClose();
+        // Perbarui daftar dan tutup modal. Filter is_me: 1 dipastikan terkirim.
+        dispatch(asyncSetLostFounds({ is_me: 1, limit: 1000 }));
+        onClose(); 
       }
     }
-  }, [isLostFoundAdd]);
+  }, [isLostAdd, isLostAdded, dispatch, onClose]);
 
   useEffect(() => {
-    if (show) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
+    // Memastikan modal memiliki z-index tinggi di atas backdrop
+    document.body.style.overflow = show ? "hidden" : "auto";
   }, [show]);
 
-  // Fungsi save
-  function handleSave() {
+  async function handleSave() {
     if (!title) {
       showErrorDialog("Judul tidak boleh kosong");
       return;
     }
-
     if (!description) {
       showErrorDialog("Deskripsi tidak boleh kosong");
       return;
     }
-    
-    if (!status) {
-      showErrorDialog("Status tidak boleh kosong");
-      return;
-    }
 
     setLoading(true);
-    dispatch(asyncSetIsLostFoundAdd(title, description, status));
+    const status = "lost";
+
+    try {
+        // --- 1. POST Data Teks (API Call Langsung) ---
+        const response = await lostFoundApi.postLostFound(title, description, status);
+        const lostFoundId = response.lost_found_id;
+        
+        // --- 2. POST Data Gambar (JIKA ADA) ---
+        if (fileCover) {
+            await lostFoundApi.postLostFoundCover(lostFoundId, fileCover);
+            showSuccessDialog("Data dan gambar berhasil ditambahkan!");
+        } else {
+             showSuccessDialog("Data dasar berhasil ditambahkan.");
+        }
+
+        // --- 3. Update Redux State (Cleanup) ---
+        dispatch(setIsLostFoundAddedActionCreator(true)); 
+
+    } catch (error) {
+        showErrorDialog(error.message || "Gagal menyimpan data.");
+        dispatch(setIsLostFoundAddedActionCreator(false)); 
+    }
+    dispatch(setIsLostFoundAddActionCreator(true)); 
   }
 
   return (
@@ -76,8 +91,9 @@ function AddModal({ show, onClose }) {
             animate={{ opacity: 0.75 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="modal-backdrop"
+            className="modal-backdrop fade show"
             onClick={onClose}
+            style={{ zIndex: 1050 }} // Z-index untuk memastikan backdrop muncul
           />
 
           <motion.div
@@ -85,15 +101,15 @@ function AddModal({ show, onClose }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="modal"
+            className="modal fade show"
             tabIndex="-1"
-            style={{ display: "block" }}
+            role="dialog"
+            style={{ zIndex: 1060, display: 'block' }} // Z-index untuk modal
           >
-            <div className="modal-dialog">
+            <div className="modal-dialog modal-dialog-centered">
               <div className="modal-content">
                 <div className="modal-header bg-light">
-                  {/* Mengganti judul */}
-                  <h1 className="modal-title fs-5">Tambah Lost & Found</h1>
+                  <h1 className="modal-title fs-5">Tambah Barang Hilang</h1>
                   <button
                     type="button"
                     className="btn-close"
@@ -101,43 +117,58 @@ function AddModal({ show, onClose }) {
                     aria-label="Close"
                   ></button>
                 </div>
+
                 <div className="modal-body">
-                  {/* Input Judul */}
                   <div className="mb-3">
-                    <label className="form-label">Judul</label>
+                    {/* PERBAIKAN: Judul */}
+                    <label htmlFor="addLfTitle" className="form-label">Judul</label> 
                     <input
                       type="text"
+                      id="addLfTitle" // ID UNIK
+                      name="title" // NAME UNTUK AUTOFILL
                       onChange={changeTitle}
                       className="form-control"
+                      disabled={loading}
                     />
                   </div>
-                  {/* Input Deskripsi */}
                   <div className="mb-3">
-                    <label className="form-label">Deskripsi</label>
+                    {/* PERBAIKAN: Deskripsi */}
+                    <label htmlFor="addLfDescription" className="form-label">Deskripsi</label>
                     <textarea
+                      id="addLfDescription" // ID UNIK
+                      name="description" // NAME UNTUK AUTOFILL
                       onChange={changeDescription}
                       className="form-control"
                       rows="3"
+                      disabled={loading}
                     ></textarea>
                   </div>
-                  {/* Input Status (BARU) */}
+                  
+                  {/* INPUT GAMBAR BARU */}
                   <div className="mb-3">
-                    <label className="form-label">Status</label>
-                    <select 
-                      onChange={(e) => setStatus(e.target.value)}
-                      value={status}
-                      className="form-select"
-                    >
-                      <option value="lost">Barang Hilang</option>
-                      <option value="found">Barang Ditemukan</option>
-                    </select>
+                    {/* PERBAIKAN: Foto Barang */}
+                    <label htmlFor="addLfCover" className="form-label">Foto Barang (Opsional)</label>
+                    <input
+                      type="file"
+                      id="addLfCover" // ID UNIK
+                      name="cover" // NAME UNTUK AUTOFILL
+                      accept="image/*"
+                      ref={fileInputRef}
+                      onChange={(e) => setFileCover(e.target.files[0])}
+                      className="form-control"
+                      disabled={loading}
+                    />
+                    {fileCover && <small className="text-muted">File terpilih: {fileCover.name}</small>}
                   </div>
+                  
                 </div>
+
                 <div className="modal-footer bg-light">
                   <button
                     type="button"
                     className="btn btn-secondary"
                     onClick={onClose}
+                    disabled={loading}
                   >
                     <i className="bi bi-x-circle"></i> Batal
                   </button>

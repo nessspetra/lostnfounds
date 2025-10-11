@@ -1,15 +1,36 @@
+import { Link } from "react-router-dom";
+
 function NavbarComponent({ profile, handleLogout }) {
+  const photoUrl = profile.photo || "/user.png";
+
   return (
-    <nav className="navbar navbar-expand-md navbar-dark bg-primary fixed-top">
-      <div className="container-fluid">
-        <a className="navbar-brand d-flex align-items-center gap-2" href="#">
+    <nav
+      className="navbar navbar-expand-md shadow-sm fixed-top py-2"
+      style={{
+        backgroundColor: "#e9f0ff",
+        borderBottom: "1px solid #c5d3ff",
+      }}
+    >
+      <div className="container-fluid px-4">
+        {/* Brand */}
+        <Link
+          className="navbar-brand d-flex align-items-center gap-2 fw-semibold text-primary"
+          to="/"
+        >
           <img
             src="/logo.png"
             alt="Logo"
-            style={{ width: "36px", height: "36px" }}
+            style={{
+              width: "38px",
+              height: "38px",
+              borderRadius: "8px",
+              objectFit: "cover",
+            }}
           />
-          Lost & Founds
-        </a>
+          <span>Lost & Founds</span>
+        </Link>
+
+        {/* Toggle for mobile */}
         <button
           className="navbar-toggler"
           type="button"
@@ -18,33 +39,47 @@ function NavbarComponent({ profile, handleLogout }) {
         >
           <span className="navbar-toggler-icon"></span>
         </button>
+
+        {/* Navbar content */}
         <div className="collapse navbar-collapse" id="navbarCollapse">
-          <ul className="navbar-nav ms-auto">
+          <ul className="navbar-nav ms-auto align-items-center">
             <li className="nav-item dropdown">
               <a
-                className="nav-link text-white dropdown-toggle"
+                className="nav-link dropdown-toggle d-flex align-items-center text-dark"
                 href="#"
                 id="profileDropdown"
                 role="button"
                 data-bs-toggle="dropdown"
               >
                 <img
-                  src="/user.png"
+                  src={photoUrl}
                   alt="Profile"
-                  className="profile-img me-1"
+                  className="rounded-circle me-2"
+                  style={{
+                    width: "34px",
+                    height: "34px",
+                    border: "2px solid #007bff",
+                    objectFit: "cover",
+                  }}
                 />
-                {profile.name}
+                <span className="fw-medium">{profile.name}</span>
               </a>
-              <ul className="dropdown-menu dropdown-menu-end">
-                <li>
-                  <a className="dropdown-item" href="#">
-                    <i className="bi bi-user me-2"></i>Profile
-                  </a>
+
+              {/* Dropdown */}
+              <ul className="dropdown-menu dropdown-menu-end shadow-sm">
+                <li className="px-3 py-2 text-muted small" style={{ borderBottom: "1px solid #eee" }}>
+                  <div className="fw-semibold">{profile.name}</div>
+                  <div style={{ fontSize: "0.85em" }}>{profile.role || "User"}</div>
                 </li>
                 <li>
-                  <a className="dropdown-item" href="#">
-                    <i className="bi bi-cog me-2"></i>Settings
-                  </a>
+                  <Link className="dropdown-item" to="/profile">
+                    <i className="bi bi-person me-2"></i>Profile
+                  </Link>
+                </li>
+                <li>
+                  <Link className="dropdown-item" to="/settings">
+                    <i className="bi bi-gear me-2"></i>Settings
+                  </Link>
                 </li>
                 <li>
                   <hr className="dropdown-divider" />
@@ -52,10 +87,10 @@ function NavbarComponent({ profile, handleLogout }) {
                 <li>
                   <button
                     type="button"
-                    className="dropdown-item"
+                    className="dropdown-item text-danger"
                     onClick={handleLogout}
                   >
-                    <i className="bi bi-box-arrow-right"></i> Logout
+                    <i className="bi bi-box-arrow-right me-2"></i>Logout
                   </button>
                 </li>
               </ul>

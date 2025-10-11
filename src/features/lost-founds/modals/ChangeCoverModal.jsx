@@ -100,9 +100,12 @@ function ChangeCoverModal({ show, onClose, lostFound }) {
                 </div>
                 <div className="modal-body">
                   <div className="mb-3">
-                    <label className="form-label">Pilih Cover</label>
+                    {/* PERBAIKAN: Tambahkan htmlFor */}
+                    <label htmlFor="lfCoverInput" className="form-label">Pilih Cover</label>
                     <input
                       type="file"
+                      id="lfCoverInput" // PERBAIKAN: Tambahkan id
+                      name="cover" // PERBAIKAN: Tambahkan name
                       accept="image/*"
                       onChange={(e) => {
                         const file = e.target.files?.[0];

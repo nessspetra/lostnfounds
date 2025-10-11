@@ -117,7 +117,7 @@ const lostfoundApi = (() => {
     return message;
   }
   
-  // 7. Get Stats Daily (GET /lost-founds/stats/daily) - BARU
+
   async function getStatsDaily(params = {}) {
     const queryString = new URLSearchParams(params).toString();
     const response = await apiHelper.fetchData(
@@ -135,8 +135,7 @@ const lostfoundApi = (() => {
     return data;
   }
 
-  // 8. Get Stats Monthly (GET /lost-founds/stats/monthly) - BARU
-  async function getStatsMonthly(params = {}) {
+   async function getStatsMonthly(params = {}) {
     const queryString = new URLSearchParams(params).toString();
     const response = await apiHelper.fetchData(
       _url(`/stats/monthly${queryString ? `?${queryString}` : ""}`),

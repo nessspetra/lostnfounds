@@ -1,5 +1,4 @@
 import { useSelector, useDispatch } from "react-redux";
-import "../resources/custom.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import ChangeModal from "../modals/ChangeModal"; 
@@ -21,29 +20,25 @@ function DetailPage() {
   const [showChangeCoverModal, setShowChangeCoverModal] = useState(false);
   const [showChangeModal, setShowChangeModal] = useState(false); 
 
-  // Ambil data dari reducer (Diubah)
   const profile = useSelector((state) => state.profile);
   const lostFound = useSelector((state) => state.lostFound);
   const isLostFound = useSelector((state) => state.isLostFound);
 
-  // 1. Ambil data lostFound sesuai id
   useEffect(() => {
     if (lostFoundId) {
       dispatch(asyncSetLostFound(lostFoundId));
     }
   }, [lostFoundId, dispatch]);
 
-  // Periksa apakah pengambilan data lostFound sudah selesai
   useEffect(() => {
     if (isLostFound) {
       dispatch(setIsLostFoundActionCreator(false));
       if (!lostFound) {
-        navigate("/lost-founds"); // Diubah
+        navigate("/lost-founds");
       }
     }
   }, [isLostFound, lostFound, navigate, dispatch]);
 
-  // Fungsi delete
   function handleDeleteLostFound() {
     showConfirmDialog(
       "Hapus Lost & Found",
@@ -57,6 +52,9 @@ function DetailPage() {
   }
 
   if (!profile || !lostFound) return;
+  
+  // Penentu apakah item ini milik pengguna yang sedang login
+  const isItemAuthor = lostFound.user_id === profile.id;
 
   return (
     <>
@@ -64,51 +62,49 @@ function DetailPage() {
         <div className="container-fluid mt-3">
           <div className="d-flex align-items-center mb-3">
             <div className="flex-fill">
-              <h2 className="mb-0">
+              <h2 className="mb-0" style={{ color: '#97d2e8' }}>
                 {lostFound.title}
-                {/* Status Barang: Hilang/Ditemukan */}
                 {lostFound.status === "found" ? (
-                  <span className="badge bg-primary ms-2">Ditemukan</span>
+                  <span className="badge bg-primary ms-2" style={{ backgroundColor: '#4bc0c0', color: '#2b2f5c' }}>Ditemukan</span>
                 ) : (
-                  <span className="badge bg-warning ms-2">Hilang</span>
-                )}
-                {/* Status Penyelesaian: Selesai/Belum Selesai */}
-                {lostFound.is_completed ? (
-                  <span className="badge bg-success ms-2">Selesai/Diklaim</span>
-                ) : (
-                  <span className="badge bg-danger ms-2">Belum Selesai</span>
+                  <span className="badge bg-warning ms-2" style={{ backgroundColor: '#ff6384', color: '#2b2f5c' }}>Hilang</span>
                 )}
               </h2>
             </div>
-            {lostFound.user_id === profile.id && (
+            
+            {/* HANYA TAMPILKAN TOMBOL AKSI JIKA PENGGUNA ADALAH AUTHOR ITEM */}
+            {isItemAuthor && (
               <div className="btn-group" role="group">
                 <button
                   type="button"
-                  className="btn btn-primary"
+                  className="btn"
                   onClick={() => setShowChangeModal(true)}
+                  style={{ backgroundColor: '#7c88ff', color: '#2b2f5c' }}
                 >
                   <i className="bi bi-pencil-square"></i> Ubah Detail
                 </button>
                 <button
                   type="button"
-                  className="btn btn-warning"
+                  className="btn"
                   onClick={() => setShowChangeCoverModal(true)}
+                  style={{ backgroundColor: '#97d2e8', color: '#2b2f5c' }}
                 >
                   <i className="bi bi-image"></i> Ubah Cover
                 </button>
                 <button
                   type="button"
-                  className="btn btn-danger"
+                  className="btn"
                   onClick={handleDeleteLostFound}
+                  style={{ backgroundColor: '#ff6384', color: '#2b2f5c' }}
                 >
                   <i className="bi bi-trash"></i> Hapus
                 </button>
               </div>
             )}
           </div>
-          <hr />
+          <hr style={{ borderColor: '#3a416a' }} />
 
-          <div className="card shadow-sm">
+          <div className="card shadow-sm" style={{ backgroundColor: '#2b2f5c', color: '#e0e0ff', border: '1px solid #3a416a' }}>
             <div className="card-body">
               <div className="row">
                 {/* Kolom Kiri: Cover Image */}
@@ -119,12 +115,12 @@ function DetailPage() {
                       className="img-fluid rounded shadow-sm"
                       src={lostFound.cover}
                       alt="Cover Lost & Found"
-                      style={{ maxHeight: "400px", objectFit: "cover" }}
+                      style={{ maxHeight: "400px", objectFit: "cover", border: '1px solid #7c88ff' }}
                     />
                   ) : (
-                    <div className="text-center p-5 bg-light rounded border">
-                      <i className="bi bi-image-fill fs-1 text-muted"></i>
-                      <p className="mt-2 text-muted">Tidak ada cover</p>
+                    <div className="text-center p-5 rounded border" style={{ backgroundColor: '#3a416a', borderColor: '#4a4f78' }}>
+                      <i className="bi bi-image-fill fs-1" style={{ color: '#97d2e8' }}></i>
+                      <p className="mt-2 text-muted" style={{ color: '#e0e0ff' }}>Tidak ada cover</p>
                     </div>
                   )}
                 </div>
@@ -132,32 +128,21 @@ function DetailPage() {
                 {/* Kolom Kanan: Detail Item */}
                 <div className="col-md-7">
                   <h5 className="card-title">Deskripsi Item</h5>
-                  <p className="card-text text-muted">
+                  <p className="card-text" style={{ color: '#c0c0c0' }}>
                     {lostFound.description}
                   </p>
-                  <hr />
+                  <hr style={{ borderColor: '#3a416a' }} />
                   
-                  <ul className="list-group list-group-flush">
-                    <li className="list-group-item">
+                  <ul className="list-group list-group-flush" style={{ backgroundColor: 'transparent' }}>
+                    <li className="list-group-item" style={{ backgroundColor: 'transparent', borderTop: '1px solid #3a416a', color: '#e0e0ff' }}>
                       <strong>Status Barang:</strong>{" "}
                       {lostFound.status === "found" ? (
-                        <span className="text-primary">Ditemukan</span>
+                        <span style={{ color: '#4bc0c0' }}>Ditemukan</span>
                       ) : (
-                        <span className="text-warning">Hilang</span>
+                        <span style={{ color: '#ff6384' }}>Hilang</span>
                       )}
                     </li>
-                    <li className="list-group-item">
-                      <strong>Status Penyelesaian:</strong>{" "}
-                      {lostFound.is_completed ? (
-                        <span className="text-success">Sudah Diklaim</span>
-                      ) : (
-                        <span className="text-danger">Belum Diklaim</span>
-                      )}
-                    </li>
-                    <li className="list-group-item">
-                      <strong>Dibuat Oleh:</strong> {lostFound.user.name}
-                    </li>
-                    <li className="list-group-item">
+                    <li className="list-group-item" style={{ backgroundColor: 'transparent', borderTop: '1px solid #3a416a', borderBottom: 'none', color: '#e0e0ff' }}>
                       <strong>Tanggal Dibuat:</strong> {formatDate(lostFound.created_at)}
                     </li>
                   </ul>
@@ -172,14 +157,14 @@ function DetailPage() {
       <ChangeModal
         show={showChangeModal}
         onClose={() => setShowChangeModal(false)}
-        lostFoundId={lostFound.id} // Diubah
+        lostFoundId={lostFound.id}
       />
 
       {/* Modal Ubah Cover */}
       <ChangeCoverModal
         show={showChangeCoverModal}
         onClose={() => setShowChangeCoverModal(false)}
-        lostFound={lostFound} // Diubah
+        lostFound={lostFound}
       />
     </>
   );

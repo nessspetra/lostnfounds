@@ -133,3 +133,9 @@ export function asyncPutProfilePassword(oldPassword, newPassword) {
     dispatch(setIsChangeProfilePasswordActionCreator(true));
   };
 }
+
+export function asyncUpdateProfile(name, email) {
+    return asyncPutProfile(name, email);
+
+    
+}
