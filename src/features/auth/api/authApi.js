@@ -1,15 +1,15 @@
 import apiHelper from "../../../helpers/apiHelper";
 
 const authApi = (() => {
-  const VITE_BASE_URL = import.meta.env.VITE_DELCOM_BASEURL; 
-
-    const BASE_URL = `${VITE_BASE_URL}/auth`; 
+    const VITE_BASE_URL = import.meta.env.VITE_DELCOM_BASEURL; 
+  
+  
+  const BASE_URL = `${VITE_BASE_URL}/auth`; 
 
   function _url(path) {
- 
+
     return BASE_URL + path; 
   }
-  
 
   async function postRegister(name, email, password) {
     const response = await apiHelper.fetchData(_url("/register"), {
