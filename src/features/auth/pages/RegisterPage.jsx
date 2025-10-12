@@ -1,20 +1,31 @@
 import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 import useInput from "../../../hooks/useInput";
 import {
   asyncSetIsAuthRegister,
   setIsAuthRegisterActionCreator,
 } from "../states/action";
-import { useEffect, useState } from "react";
 
 function RegisterPage() {
+  // Inisialisasi Redux hook
   const dispatch = useDispatch();
+
+  // Mengambil state dari Redux store
   const isAuthRegister = useSelector((state) => state.isAuthRegister);
 
+  // State lokal
   const [loading, setLoading] = useState(false);
+
+  // Hook untuk menangani perubahan input form
   const [name, onChangeName] = useInput("");
   const [email, onChangeEmail] = useInput("");
   const [password, onChangePassword] = useInput("");
 
+  /**
+   * useEffect: akan dijalankan setiap kali state `isAuthRegister` berubah.
+   * Jika registrasi berhasil (`isAuthRegister === true`), maka loading dihentikan
+   * dan status register di-reset agar tidak terjadi pemicu berulang.
+   */
   useEffect(() => {
     if (isAuthRegister === true) {
       setLoading(false);
@@ -22,6 +33,13 @@ function RegisterPage() {
     }
   }, [isAuthRegister, dispatch]);
 
+  /**
+   * Handler submit form registrasi
+   * --------------------------------
+   * - Mencegah reload halaman (preventDefault)
+   * - Mengaktifkan indikator loading
+   * - Memicu aksi async untuk registrasi ke server
+   */
   async function onSubmitHandler(event) {
     event.preventDefault();
     setLoading(true);
@@ -47,7 +65,9 @@ function RegisterPage() {
           border: "none",
         }}
       >
-        {/* BAGIAN KIRI */}
+        {/* ================================
+            BAGIAN KIRI (Informasi / Branding)
+           ================================ */}
         <div
           className="d-none d-md-flex flex-column justify-content-center align-items-center text-white"
           style={{
@@ -75,11 +95,14 @@ function RegisterPage() {
               opacity: 0.9,
             }}
           >
-            Join our Lost & Found community and help others find what they’ve lost.
+            Join our Lost & Found community and help others find what they’ve
+            lost.
           </p>
         </div>
 
-        {/* BAGIAN KANAN */}
+        {/* ================================
+            BAGIAN KANAN (Form Registrasi)
+           ================================ */}
         <div
           className="p-5 d-flex flex-column justify-content-center"
           style={{
@@ -87,6 +110,7 @@ function RegisterPage() {
             backgroundColor: "#fff",
           }}
         >
+          {/* Header Form */}
           <div className="text-center mb-4">
             <h3
               style={{
@@ -102,7 +126,9 @@ function RegisterPage() {
             </p>
           </div>
 
+          {/* Form Registrasi */}
           <form onSubmit={onSubmitHandler}>
+            {/* Input: Full Name */}
             <div className="mb-3">
               <label className="form-label fw-semibold text-secondary">
                 Full Name
@@ -122,6 +148,7 @@ function RegisterPage() {
               />
             </div>
 
+            {/* Input: Email */}
             <div className="mb-3">
               <label className="form-label fw-semibold text-secondary">
                 Email Address
@@ -141,6 +168,7 @@ function RegisterPage() {
               />
             </div>
 
+            {/* Input: Password */}
             <div className="mb-4">
               <label className="form-label fw-semibold text-secondary">
                 Password
@@ -160,6 +188,7 @@ function RegisterPage() {
               />
             </div>
 
+            {/* Terms and Privacy */}
             <div className="text-end mb-4">
               <small className="text-muted">
                 By registering, you agree to our{" "}
@@ -177,6 +206,7 @@ function RegisterPage() {
               </small>
             </div>
 
+            {/* Tombol Submit */}
             <div>
               {loading ? (
                 <button
@@ -221,6 +251,7 @@ function RegisterPage() {
             </div>
           </form>
 
+          {/* Link ke halaman login */}
           <div className="text-center mt-4">
             <p className="text-muted" style={{ fontSize: "0.9rem" }}>
               Already have an account?{" "}
