@@ -1,3 +1,4 @@
+
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useRef } from "react";
 import useInput from "../../../hooks/useInput";
@@ -7,85 +8,102 @@ import {
   asyncSetLostFounds,
   setIsLostFoundAddActionCreator,
   setIsLostFoundAddedActionCreator,
-  // Kita tidak perlu asyncSetIsLostFoundAdd karena kita memanggil API langsung
-} from "../states/action"; 
-import lostFoundApi from "../api/lostfoundApi"; // Diperlukan untuk POST bertahap
+} from "../states/action";
+import lostFoundApi from "../api/lostfoundApi";
 
+/**
+ * Komponen Modal Tambah Barang Hilang.
+ * @param {boolean} show - Menentukan apakah modal ditampilkan.
+ * @param {function} onClose - Fungsi untuk menutup modal.
+ */
 function AddModal({ show, onClose }) {
   const dispatch = useDispatch();
 
+  // ======== REDUX STATE ========
   const isLostAdd = useSelector((state) => state.isLostAdd);
   const isLostAdded = useSelector((state) => state.isLostAdded);
 
+  // ======== LOCAL STATE ========
   const [loading, setLoading] = useState(false);
-  
-  // State Input Teks
+
+  // Input teks
   const [title, changeTitle] = useInput("");
   const [description, changeDescription] = useInput("");
-  
-  // State Input Gambar
-  const [fileCover, setFileCover] = useState(null); 
+
+  // Input file
+  const [fileCover, setFileCover] = useState(null);
   const fileInputRef = useRef(null);
 
-  // Cek apakah tambah data selesai
+  // ======== EFFECT: Monitoring Redux State ========
   useEffect(() => {
     if (isLostAdd) {
+      // Matikan loading setelah proses selesai
       setLoading(false);
       dispatch(setIsLostFoundAddActionCreator(false));
+
+      // Jika data berhasil ditambahkan
       if (isLostAdded) {
         dispatch(setIsLostFoundAddedActionCreator(false));
-        // Perbarui daftar dan tutup modal. Filter is_me: 1 dipastikan terkirim.
+
+        // Refresh daftar barang milik user
         dispatch(asyncSetLostFounds({ is_me: 1, limit: 1000 }));
-        onClose(); 
+
+        // Tutup modal
+        onClose();
       }
     }
   }, [isLostAdd, isLostAdded, dispatch, onClose]);
 
+  // ======== EFFECT: Kontrol scroll body saat modal terbuka ========
   useEffect(() => {
-    // Memastikan modal memiliki z-index tinggi di atas backdrop
     document.body.style.overflow = show ? "hidden" : "auto";
   }, [show]);
 
+  // ======== HANDLER: Simpan data ========
   async function handleSave() {
+    // Validasi input wajib
     if (!title) {
-      showErrorDialog("Judul tidak boleh kosong");
+      showErrorDialog("Judul tidak boleh kosong.");
       return;
     }
     if (!description) {
-      showErrorDialog("Deskripsi tidak boleh kosong");
+      showErrorDialog("Deskripsi tidak boleh kosong.");
       return;
     }
 
     setLoading(true);
-    const status = "lost";
+    const status = "lost"; // Default status
 
     try {
-        // --- 1. POST Data Teks (API Call Langsung) ---
-        const response = await lostFoundApi.postLostFound(title, description, status);
-        const lostFoundId = response.lost_found_id;
-        
-        // --- 2. POST Data Gambar (JIKA ADA) ---
-        if (fileCover) {
-            await lostFoundApi.postLostFoundCover(lostFoundId, fileCover);
-            showSuccessDialog("Data dan gambar berhasil ditambahkan!");
-        } else {
-             showSuccessDialog("Data dasar berhasil ditambahkan.");
-        }
+      // 1️⃣ Kirim data teks ke API
+      const response = await lostFoundApi.postLostFound(title, description, status);
+      const lostFoundId = response.lost_found_id;
 
-        // --- 3. Update Redux State (Cleanup) ---
-        dispatch(setIsLostFoundAddedActionCreator(true)); 
+      // 2️⃣ Jika ada file gambar, upload terpisah
+      if (fileCover) {
+        await lostFoundApi.postLostFoundCover(lostFoundId, fileCover);
+        showSuccessDialog("Data dan gambar berhasil ditambahkan!");
+      } else {
+        showSuccessDialog("Data berhasil ditambahkan tanpa gambar.");
+      }
 
+      // 3️⃣ Update state Redux
+      dispatch(setIsLostFoundAddedActionCreator(true));
     } catch (error) {
-        showErrorDialog(error.message || "Gagal menyimpan data.");
-        dispatch(setIsLostFoundAddedActionCreator(false)); 
+      showErrorDialog(error.message || "Gagal menyimpan data.");
+      dispatch(setIsLostFoundAddedActionCreator(false));
     }
-    dispatch(setIsLostFoundAddActionCreator(true)); 
+
+    // 4️⃣ Sinyal bahwa proses add selesai
+    dispatch(setIsLostFoundAddActionCreator(true));
   }
 
+  // ======== RENDER MODAL ========
   return (
     <AnimatePresence>
       {show && (
         <>
+          {/* BACKDROP TRANSPARAN */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.75 }}
@@ -93,9 +111,10 @@ function AddModal({ show, onClose }) {
             transition={{ duration: 0.3 }}
             className="modal-backdrop fade show"
             onClick={onClose}
-            style={{ zIndex: 1050 }} // Z-index untuk memastikan backdrop muncul
+            style={{ zIndex: 1050 }}
           />
 
+          {/* KONTEN MODAL */}
           <motion.div
             initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
@@ -104,10 +123,11 @@ function AddModal({ show, onClose }) {
             className="modal fade show"
             tabIndex="-1"
             role="dialog"
-            style={{ zIndex: 1060, display: 'block' }} // Z-index untuk modal
+            style={{ zIndex: 1060, display: "block" }}
           >
             <div className="modal-dialog modal-dialog-centered">
               <div className="modal-content">
+                {/* HEADER */}
                 <div className="modal-header bg-light">
                   <h1 className="modal-title fs-5">Tambah Barang Hilang</h1>
                   <button
@@ -118,52 +138,64 @@ function AddModal({ show, onClose }) {
                   ></button>
                 </div>
 
+                {/* BODY */}
                 <div className="modal-body">
+                  {/* Input Judul */}
                   <div className="mb-3">
-                    {/* PERBAIKAN: Judul */}
-                    <label htmlFor="addLfTitle" className="form-label">Judul</label> 
+                    <label htmlFor="addLfTitle" className="form-label">
+                      Judul
+                    </label>
                     <input
                       type="text"
-                      id="addLfTitle" // ID UNIK
-                      name="title" // NAME UNTUK AUTOFILL
+                      id="addLfTitle"
+                      name="title"
                       onChange={changeTitle}
                       className="form-control"
                       disabled={loading}
                     />
                   </div>
+
+                  {/* Input Deskripsi */}
                   <div className="mb-3">
-                    {/* PERBAIKAN: Deskripsi */}
-                    <label htmlFor="addLfDescription" className="form-label">Deskripsi</label>
+                    <label htmlFor="addLfDescription" className="form-label">
+                      Deskripsi
+                    </label>
                     <textarea
-                      id="addLfDescription" // ID UNIK
-                      name="description" // NAME UNTUK AUTOFILL
+                      id="addLfDescription"
+                      name="description"
                       onChange={changeDescription}
                       className="form-control"
                       rows="3"
                       disabled={loading}
                     ></textarea>
                   </div>
-                  
-                  {/* INPUT GAMBAR BARU */}
+
+                  {/* Input Gambar (opsional) */}
                   <div className="mb-3">
-                    {/* PERBAIKAN: Foto Barang */}
-                    <label htmlFor="addLfCover" className="form-label">Foto Barang (Opsional)</label>
+                    <label htmlFor="addLfCover" className="form-label">
+                      Foto Barang (Opsional)
+                    </label>
                     <input
                       type="file"
-                      id="addLfCover" // ID UNIK
-                      name="cover" // NAME UNTUK AUTOFILL
+                      id="addLfCover"
+                      name="cover"
                       accept="image/*"
                       ref={fileInputRef}
                       onChange={(e) => setFileCover(e.target.files[0])}
                       className="form-control"
                       disabled={loading}
                     />
-                    {fileCover && <small className="text-muted">File terpilih: {fileCover.name}</small>}
+                    {fileCover && (
+                      <small className="text-muted">
+                        File terpilih: {fileCover.name}
+                      </small>
+                    )}
                   </div>
-                  
                 </div>
 
+                {/* FOOTER */}
                 <div className="modal-footer bg-light">
+                  {/* Tombol Batal */}
                   <button
                     type="button"
                     className="btn btn-secondary"
@@ -173,6 +205,7 @@ function AddModal({ show, onClose }) {
                     <i className="bi bi-x-circle"></i> Batal
                   </button>
 
+                  {/* Tombol Simpan */}
                   {loading ? (
                     <button type="button" className="btn btn-primary" disabled>
                       <span className="spinner-border spinner-border-sm"></span>

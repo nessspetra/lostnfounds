@@ -1,14 +1,28 @@
 import { ActionType } from "./action";
 
-export function lostFoundsReducer(states = [], action) {
+/* ========================================================================
+   1️⃣ LIST SEMUA LOST & FOUND (STATE: Array)
+   ======================================================================== */
+/**
+ * Reducer: lostFoundsReducer
+ * Menyimpan daftar semua data Lost & Found dari API.
+ */
+export function lostFoundsReducer(state = [], action) {
   switch (action.type) {
     case ActionType.SET_LOST_FOUNDS:
       return action.payload;
     default:
-      return states;
+      return state;
   }
 }
 
+/* ========================================================================
+   2️⃣ DETAIL LOST & FOUND (STATE: Object/null)
+   ======================================================================== */
+/**
+ * Reducer: lostFoundReducer
+ * Menyimpan data detail satu item Lost & Found berdasarkan ID.
+ */
 export function lostFoundReducer(state = null, action) {
   switch (action.type) {
     case ActionType.SET_LOST_FOUND:
@@ -18,6 +32,13 @@ export function lostFoundReducer(state = null, action) {
   }
 }
 
+/* ========================================================================
+   3️⃣ STATUS STATE UMUM (STATE: Boolean)
+   ======================================================================== */
+/**
+ * Reducer: isLostFoundReducer
+ * Menandai apakah detail Lost & Found sedang aktif/telah di-load.
+ */
 export function isLostFoundReducer(state = false, action) {
   switch (action.type) {
     case ActionType.SET_IS_LOST_FOUND:
@@ -27,6 +48,13 @@ export function isLostFoundReducer(state = false, action) {
   }
 }
 
+/* ========================================================================
+   4️⃣ TAMBAH LOST & FOUND (POST)
+   ======================================================================== */
+/**
+ * Reducer: isLostFoundAddReducer
+ * Menandai proses membuka form/aksi penambahan data.
+ */
 export function isLostFoundAddReducer(state = false, action) {
   switch (action.type) {
     case ActionType.SET_IS_LOST_FOUND_ADD:
@@ -36,6 +64,10 @@ export function isLostFoundAddReducer(state = false, action) {
   }
 }
 
+/**
+ * Reducer: isLostFoundAddedReducer
+ * Menandai apakah data berhasil ditambahkan.
+ */
 export function isLostFoundAddedReducer(state = false, action) {
   switch (action.type) {
     case ActionType.SET_IS_LOST_FOUND_ADDED:
@@ -45,6 +77,13 @@ export function isLostFoundAddedReducer(state = false, action) {
   }
 }
 
+/* ========================================================================
+   5️⃣ UBAH LOST & FOUND (PUT)
+   ======================================================================== */
+/**
+ * Reducer: isLostFoundChangeReducer
+ * Menandai apakah proses update sedang berlangsung.
+ */
 export function isLostFoundChangeReducer(state = false, action) {
   switch (action.type) {
     case ActionType.SET_IS_LOST_FOUND_CHANGE:
@@ -54,6 +93,10 @@ export function isLostFoundChangeReducer(state = false, action) {
   }
 }
 
+/**
+ * Reducer: isLostFoundChangedReducer
+ * Menandai apakah data berhasil diubah.
+ */
 export function isLostFoundChangedReducer(state = false, action) {
   switch (action.type) {
     case ActionType.SET_IS_LOST_FOUND_CHANGED:
@@ -63,6 +106,13 @@ export function isLostFoundChangedReducer(state = false, action) {
   }
 }
 
+/* ========================================================================
+   6️⃣ UBAH COVER (POST /lost-founds/:id/cover)
+   ======================================================================== */
+/**
+ * Reducer: isLostFoundChangeCoverReducer
+ * Menandai apakah proses perubahan cover sedang berlangsung.
+ */
 export function isLostFoundChangeCoverReducer(state = false, action) {
   switch (action.type) {
     case ActionType.SET_IS_LOST_FOUND_CHANGE_COVER:
@@ -72,6 +122,10 @@ export function isLostFoundChangeCoverReducer(state = false, action) {
   }
 }
 
+/**
+ * Reducer: isLostFoundChangedCoverReducer
+ * Menandai apakah cover berhasil diubah.
+ */
 export function isLostFoundChangedCoverReducer(state = false, action) {
   switch (action.type) {
     case ActionType.SET_IS_LOST_FOUND_CHANGED_COVER:
@@ -81,6 +135,13 @@ export function isLostFoundChangedCoverReducer(state = false, action) {
   }
 }
 
+/* ========================================================================
+   7️⃣ HAPUS LOST & FOUND (DELETE)
+   ======================================================================== */
+/**
+ * Reducer: isLostFoundDeleteReducer
+ * Menandai apakah proses penghapusan sedang berlangsung.
+ */
 export function isLostFoundDeleteReducer(state = false, action) {
   switch (action.type) {
     case ActionType.SET_IS_LOST_FOUND_DELETE:
@@ -90,6 +151,10 @@ export function isLostFoundDeleteReducer(state = false, action) {
   }
 }
 
+/**
+ * Reducer: isLostFoundDeletedReducer
+ * Menandai apakah data berhasil dihapus.
+ */
 export function isLostFoundDeletedReducer(state = false, action) {
   switch (action.type) {
     case ActionType.SET_IS_LOST_FOUND_DELETED:
@@ -99,6 +164,13 @@ export function isLostFoundDeletedReducer(state = false, action) {
   }
 }
 
+/* ========================================================================
+   8️⃣ STATISTIK (GET /stats)
+   ======================================================================== */
+/**
+ * Reducer: statsDailyReducer
+ * Menyimpan statistik harian Lost & Found.
+ */
 export function statsDailyReducer(state = {}, action) {
   switch (action.type) {
     case ActionType.SET_STATS_DAILY:
@@ -108,6 +180,10 @@ export function statsDailyReducer(state = {}, action) {
   }
 }
 
+/**
+ * Reducer: statsMonthlyReducer
+ * Menyimpan statistik bulanan Lost & Found.
+ */
 export function statsMonthlyReducer(state = {}, action) {
   switch (action.type) {
     case ActionType.SET_STATS_MONTHLY:
