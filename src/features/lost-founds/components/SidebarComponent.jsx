@@ -1,6 +1,7 @@
 import { NavLink, useLocation } from "react-router-dom";
 
 function SidebarComponent() {
+  // Hook untuk mendapatkan informasi path aktif saat ini
   const location = useLocation();
 
   return (
@@ -13,7 +14,14 @@ function SidebarComponent() {
         color: "#1a1e36",
       }}
     >
+      {/* ============================================================
+         Navigasi Utama
+         ------------------------------------------------------------
+         Terdiri dari daftar menu dengan ikon Bootstrap Icons.
+         Warna dan gaya berubah sesuai status aktif (isActive).
+         ============================================================ */}
       <ul className="nav nav-pills flex-column mb-auto mt-3">
+        {/* === Dashboard === */}
         <li className="nav-item mb-2">
           <NavLink
             to="/"
@@ -31,6 +39,8 @@ function SidebarComponent() {
             Dashboard
           </NavLink>
         </li>
+
+        {/* === Profil === */}
         <li className="nav-item mb-2">
           <NavLink
             to="/profile"
@@ -50,7 +60,15 @@ function SidebarComponent() {
         </li>
       </ul>
 
-      <div className="mt-auto pt-3 border-top" style={{ borderTop: "1px solid #d0dbff" }}>
+      {/* ============================================================
+         Footer Sidebar
+         ------------------------------------------------------------
+         Menampilkan informasi versi aplikasi pada bagian bawah sidebar.
+         ============================================================ */}
+      <div
+        className="mt-auto pt-3 border-top"
+        style={{ borderTop: "1px solid #d0dbff" }}
+      >
         <p className="text-muted small mb-0">Version 1.0.0</p>
       </div>
     </div>

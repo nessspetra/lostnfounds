@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 
 function NavbarComponent({ profile, handleLogout }) {
+  // Jika pengguna tidak memiliki foto profil, gunakan default image.
   const photoUrl = profile.photo || "/user.png";
 
   return (
@@ -12,7 +13,11 @@ function NavbarComponent({ profile, handleLogout }) {
       }}
     >
       <div className="container-fluid px-4">
-        {/* Brand */}
+        {/* ============================================================
+           Brand Section
+           ------------------------------------------------------------
+           Menampilkan logo dan nama aplikasi, terhubung ke halaman utama.
+           ============================================================ */}
         <Link
           className="navbar-brand d-flex align-items-center gap-2 fw-semibold text-primary"
           to="/"
@@ -30,7 +35,11 @@ function NavbarComponent({ profile, handleLogout }) {
           <span>Lost & Founds</span>
         </Link>
 
-        {/* Toggle for mobile */}
+        {/* ============================================================
+           Toggle Button (Mobile)
+           ------------------------------------------------------------
+           Menampilkan tombol toggle untuk collapse menu di layar kecil.
+           ============================================================ */}
         <button
           className="navbar-toggler"
           type="button"
@@ -40,9 +49,14 @@ function NavbarComponent({ profile, handleLogout }) {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        {/* Navbar content */}
+        {/* ============================================================
+           Navbar Menu (Right Side)
+           ------------------------------------------------------------
+           Menampilkan dropdown profil pengguna.
+           ============================================================ */}
         <div className="collapse navbar-collapse" id="navbarCollapse">
           <ul className="navbar-nav ms-auto align-items-center">
+            {/* Dropdown Profil */}
             <li className="nav-item dropdown">
               <a
                 className="nav-link dropdown-toggle d-flex align-items-center text-dark"
@@ -51,6 +65,7 @@ function NavbarComponent({ profile, handleLogout }) {
                 role="button"
                 data-bs-toggle="dropdown"
               >
+                {/* Foto Profil */}
                 <img
                   src={photoUrl}
                   alt="Profile"
@@ -65,12 +80,24 @@ function NavbarComponent({ profile, handleLogout }) {
                 <span className="fw-medium">{profile.name}</span>
               </a>
 
-              {/* Dropdown */}
+              {/* ============================================================
+                 Dropdown Menu
+                 ------------------------------------------------------------
+                 Berisi informasi profil singkat dan beberapa menu navigasi.
+                 ============================================================ */}
               <ul className="dropdown-menu dropdown-menu-end shadow-sm">
-                <li className="px-3 py-2 text-muted small" style={{ borderBottom: "1px solid #eee" }}>
+                {/* Info Header */}
+                <li
+                  className="px-3 py-2 text-muted small"
+                  style={{ borderBottom: "1px solid #eee" }}
+                >
                   <div className="fw-semibold">{profile.name}</div>
-                  <div style={{ fontSize: "0.85em" }}>{profile.role || "User"}</div>
+                  <div style={{ fontSize: "0.85em" }}>
+                    {profile.role || "User"}
+                  </div>
                 </li>
+
+                {/* Menu Items */}
                 <li>
                   <Link className="dropdown-item" to="/profile">
                     <i className="bi bi-person me-2"></i>Profile
@@ -81,9 +108,12 @@ function NavbarComponent({ profile, handleLogout }) {
                     <i className="bi bi-gear me-2"></i>Settings
                   </Link>
                 </li>
+
                 <li>
                   <hr className="dropdown-divider" />
                 </li>
+
+                {/* Logout Button */}
                 <li>
                   <button
                     type="button"
